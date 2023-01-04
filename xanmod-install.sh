@@ -270,7 +270,9 @@ main()
         restore_source
         exit 1
     fi
-    $apt update
+    if ! $apt update && ! $apt update; then
+        yellow "warning: $apt update failed!"
+    fi
     local install_image_list
     local install_modules_list
     local install_headers_list
@@ -297,9 +299,11 @@ main()
     install_packages=("${install_image_list[@]}" "${install_modules_list[@]}" "${install_headers_list[@]}")
     if ! $apt_no_install_recommends -y install "${install_packages[@]}"; then
         $apt -y -f install
-        red "内核安装失败！"
-        restore_source
-        exit 1
+        if ! $apt_no_install_recommends -y install "${install_packages[@]}"; then
+            red "内核安装失败！"
+            restore_source
+            exit 1
+        fi
     fi
     ask_if "是否删除其他内核？(y/n)" && remove_other_kernel
     restore_source
