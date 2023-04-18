@@ -142,7 +142,7 @@ EOF
     chmod +x check_x86-64_psabi.sh
     ./check_x86-64_psabi.sh
     local level=$?
-    if [ $level -le 1 ] || [ $level -gt 4 ]; then
+    if [ $level -le 1 ] || [ $level -gt 5 ]; then
         red "获取x86-64扩展等级失败"
         exit 1
     fi
@@ -174,7 +174,15 @@ get_install_package()
     done
     [ $install_version -eq 0 ] && exit 0
     if [ $install_version -eq 3 ]; then
-        install_package=linux-xanmod-lts
+        if [ $x86_64_psabi_version -eq 1 ]; then
+            install_package=linux-xanmod-lts-x64v1
+        elif [ $x86_64_psabi_version -eq 2 ]; then
+            install_package=linux-xanmod-lts-x64v2
+        elif [ $x86_64_psabi_version -eq 3 ]; then
+            install_package=linux-xanmod-lts-x64v3
+        else
+            install_package=linux-xanmod-lts-x64v3
+        fi
     elif [ $install_version -eq 2 ]; then
         if [ $x86_64_psabi_version -eq 2 ]; then
             install_package=linux-xanmod-rt-x64v2
@@ -186,8 +194,10 @@ get_install_package()
             install_package=linux-xanmod-x64v1
         elif [ $x86_64_psabi_version -eq 2 ]; then
             install_package=linux-xanmod-x64v2
-        else
+        elif [ $x86_64_psabi_version -eq 3 ]; then
             install_package=linux-xanmod-x64v3
+        else
+            install_package=linux-xanmod-x64v4
         fi
     fi
 }
