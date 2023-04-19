@@ -214,9 +214,9 @@ check_mem()
 
 install_xanmod_source()
 {
-    [[ -f '/etc/apt/sources.list.d/xanmod-kernel.list' ]] && xanmod_source_preinstalled=1
+    [[ -f '/etc/apt/sources.list.d/xanmod-release.list' ]] && xanmod_source_preinstalled=1
     mkdir -p /etc/apt/sources.list.d
-    if ! curl -L https://dl.xanmod.org/gpg.key | apt-key --keyring /etc/apt/trusted.gpg.d/xanmod-kernel.gpg add - || !  echo 'deb http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-kernel.list; then
+    if ! curl -L https://dl.xanmod.org/gpg.key | gpg --dearmor -o /usr/share/keyrings/xanmod-archive-keyring.gpg || ! echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-release.list; then
         red "添加源失败！"
         exit 1
     fi
@@ -225,7 +225,7 @@ install_xanmod_source()
 restore_source()
 {
     if [ $xanmod_source_preinstalled -ne 1 ]; then
-        rm '/etc/apt/sources.list.d/xanmod-kernel.list'
+        rm '/etc/apt/sources.list.d/xanmod-release.list'
     fi
 }
 
@@ -273,7 +273,7 @@ main()
     check_mem
     check_important_dependence_installed curl
     check_important_dependence_installed ca-certificates
-    check_important_dependence_installed gnupg1
+    check_important_dependence_installed gpg
     install_xanmod_source
     if ! test_important_dependence_installed initramfs-tools; then
         red "依赖 initramfs-tools 安装失败！"
