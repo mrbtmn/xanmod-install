@@ -215,7 +215,10 @@ check_mem()
 install_xanmod_source()
 {
     [[ -f '/etc/apt/sources.list.d/xanmod-release.list' ]] && xanmod_source_preinstalled=1
+    rm -f '/etc/apt/sources.list.d/xanmod-release.list'
+    rm -f '/usr/share/keyrings/xanmod-archive-keyring.gpg'
     mkdir -p /etc/apt/sources.list.d
+    mkdir -p /usr/share/keyrings
     if ! curl -L https://dl.xanmod.org/gpg.key | gpg --dearmor -o /usr/share/keyrings/xanmod-archive-keyring.gpg || ! echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-release.list; then
         red "添加源失败！"
         exit 1
@@ -226,6 +229,7 @@ restore_source()
 {
     if [ $xanmod_source_preinstalled -ne 1 ]; then
         rm '/etc/apt/sources.list.d/xanmod-release.list'
+        rm '/usr/share/keyrings/xanmod-archive-keyring.gpg'
     fi
 }
 
